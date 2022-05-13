@@ -13,8 +13,9 @@ public class UserService {
   private final GitPackagesClient client;
 
   public User listAll() {
-    // TODO configurar mock service
+    // TODO Criar Server MOCK
     //  client.listAllUsers().toModel()
+
     GetUserResponseClient response = new GetUserResponseClient();
     response.setName("Renata");
     return response.toModel();
