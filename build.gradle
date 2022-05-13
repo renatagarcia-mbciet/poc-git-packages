@@ -1,0 +1,115 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "com.github.sherter.google-java-format" version "0.9"
+    id 'java'
+    id 'jacoco'
+}
+
+group = 'br.com.gitpackages'
+version = '1.0.1-SNAPSHOT'
+sourceCompatibility = '14'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "2021.0.0")
+    set('mapstructVersion', '1.4.2.Final')
+    set('lombokMapstructBindingVersion', '0.2.0')
+
+    set('fixtureFactoryVersion', '3.1.0')
+
+    set('restAssuredVersion', '4.2.0')
+    set('wiremockStandaloneVersion', '2.27.2')
+}
+
+dependencies {
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
+
+    compileOnly 'org.projectlombok:lombok'
+
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.data:spring-data-commons'
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    testCompileOnly 'org.projectlombok:lombok'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+bootRun {
+    if (project.hasProperty('args')) {
+        args project.args.split(',')
+    }
+}
+
+test {
+    useJUnitPlatform {
+        if (!(System.getProperty("includeTags") ?: "").isBlank()) {
+            includeTags System.getProperty("includeTags")
+        }
+
+        if (!(System.getProperty("excludeTags") ?: "").isBlank()) {
+            excludeTags System.getProperty("excludeTags")
+        }
+    }
+
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+}
+
+sourceSets {
+    testIntegration {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/testIntegration/java')
+        }
+        resources.srcDir file('src/testIntegration/resources')
+    }
+}
+
+configurations {
+    testIntegrationCompile.extendsFrom testCompile
+    testIntegrationRuntime.extendsFrom testRuntime
+    testIntegrationRuntimeOnly.extendsFrom testRuntimeOnly
+    testIntegrationImplementation.extendsFrom testImplementation
+}
+
+task testIntegration(type: Test) {
+    testClassesDirs = sourceSets.testIntegration.output.classesDirs
+    classpath = sourceSets.testIntegration.runtimeClasspath
+
+    useJUnitPlatform()
+}
+
+test.doFirst {
+    systemProperty 'spring.profiles.active', 'dev, test'
+}
+
+rootProject.tasks.named("processTestIntegrationResources") {
+    duplicatesStrategy = 'include'
+}
