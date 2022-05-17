@@ -1,6 +1,6 @@
 package br.com.gitpackages.templates;
 
-import br.com.gitpackages.gitpackages.client.GetUserResponseClient;
+import br.com.gitpackages.client.GetUserResponseClient;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;

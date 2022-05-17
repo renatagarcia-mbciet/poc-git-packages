@@ -1,6 +1,6 @@
-package br.com.gitpackages.gitpackages.web;
+package br.com.gitpackages.web;
 
-import br.com.gitpackages.gitpackages.service.UserService;
+import br.com.gitpackages.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

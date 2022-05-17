@@ -1,4 +1,4 @@
-package br.com.gitpackages.gitpackages;
+package br.com.gitpackages;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

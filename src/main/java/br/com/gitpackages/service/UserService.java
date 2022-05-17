@@ -1,8 +1,8 @@
-package br.com.gitpackages.gitpackages.service;
+package br.com.gitpackages.service;
 
-import br.com.gitpackages.gitpackages.client.GetUserResponseClient;
-import br.com.gitpackages.gitpackages.client.GitPackagesClient;
-import br.com.gitpackages.gitpackages.model.User;
+import br.com.gitpackages.client.GetUserResponseClient;
+import br.com.gitpackages.client.GitPackagesClient;
+import br.com.gitpackages.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

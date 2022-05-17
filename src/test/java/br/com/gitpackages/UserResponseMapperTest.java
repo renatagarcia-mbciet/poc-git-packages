@@ -1,7 +1,7 @@
 package br.com.gitpackages;
 
-import br.com.gitpackages.gitpackages.client.GetUserResponseClient;
-import br.com.gitpackages.gitpackages.mapper.UserMapper;
+import br.com.gitpackages.client.GetUserResponseClient;
+import br.com.gitpackages.mapper.UserMapper;
 import br.com.gitpackages.util.UnitTest;
 import br.com.six2six.fixturefactory.Fixture;
 import org.assertj.core.api.Assertions;

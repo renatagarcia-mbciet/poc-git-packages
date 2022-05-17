@@ -1,4 +1,4 @@
-package br.com.gitpackages.gitpackages.model;
+package br.com.gitpackages.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

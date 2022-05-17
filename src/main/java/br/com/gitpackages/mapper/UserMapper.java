@@ -1,8 +1,8 @@
-package br.com.gitpackages.gitpackages.mapper;
+package br.com.gitpackages.mapper;
 
-import br.com.gitpackages.gitpackages.client.GetUserResponseClient;
-import br.com.gitpackages.gitpackages.model.User;
-import br.com.gitpackages.gitpackages.web.GetUserResponse;
+import br.com.gitpackages.client.GetUserResponseClient;
+import br.com.gitpackages.model.User;
+import br.com.gitpackages.web.GetUserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

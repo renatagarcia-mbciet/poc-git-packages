@@ -1,7 +1,7 @@
-package br.com.gitpackages.gitpackages.web;
+package br.com.gitpackages.web;
 
-import br.com.gitpackages.gitpackages.mapper.UserMapper;
-import br.com.gitpackages.gitpackages.model.User;
+import br.com.gitpackages.mapper.UserMapper;
+import br.com.gitpackages.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
