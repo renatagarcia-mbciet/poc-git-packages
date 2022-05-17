@@ -1,115 +1,161 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.3'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id "com.github.sherter.google-java-format" version "0.9"
-    id 'java'
     id 'jacoco'
+    id 'java-library'
+    id 'maven-publish'
 }
 
-group = 'br.com.gitpackages'
-version = '1.0.0'
-sourceCompatibility = '14'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
+project.group = 'br.com'
 
 repositories {
     mavenCentral()
 }
 
 ext {
-    set('springCloudVersion', "2021.0.0")
     set('mapstructVersion', '1.4.2.Final')
     set('lombokMapstructBindingVersion', '0.2.0')
-
-    set('fixtureFactoryVersion', '3.1.0')
-
-    set('restAssuredVersion', '4.2.0')
-    set('wiremockStandaloneVersion', '2.27.2')
 }
 
 dependencies {
-    annotationProcessor 'org.projectlombok:lombok'
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
 
-    compileOnly 'org.projectlombok:lombok'
 
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:3.1.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2.2'
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-    implementation 'org.springframework.data:spring-data-commons'
-    implementation 'io.springfox:springfox-boot-starter:3.0.0'
-    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 
-    testAnnotationProcessor 'org.projectlombok:lombok'
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+    implementation 'org.hibernate:hibernate-validator:7.0.4.Final'
+    implementation 'org.springframework.data:spring-data-commons:2.6.3'
 
-    testCompileOnly 'org.projectlombok:lombok'
-}
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
-}
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.jeasy:easy-random-core:5.0.0'
 
-bootRun {
-    if (project.hasProperty('args')) {
-        args project.args.split(',')
-    }
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
 test {
-    useJUnitPlatform {
-        if (!(System.getProperty("includeTags") ?: "").isBlank()) {
-            includeTags System.getProperty("includeTags")
-        }
-
-        if (!(System.getProperty("excludeTags") ?: "").isBlank()) {
-            excludeTags System.getProperty("excludeTags")
-        }
-    }
-
+    useJUnitPlatform()
     finalizedBy jacocoTestReport
 }
 
 jacocoTestReport {
-}
+    dependsOn test
 
-sourceSets {
-    testIntegration {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/testIntegration/java')
-        }
-        resources.srcDir file('src/testIntegration/resources')
+    reports {
+        xml.required = true
+        csv.required = false
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    " "
+            ])
+        }))
     }
 }
 
-configurations {
-    testIntegrationCompile.extendsFrom testCompile
-    testIntegrationRuntime.extendsFrom testRuntime
-    testIntegrationRuntimeOnly.extendsFrom testRuntimeOnly
-    testIntegrationImplementation.extendsFrom testImplementation
+publishing {
+    publications {
+        lib(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/renatagarcia-mbciet/poc-git-packages/"
+            credentials {
+                username System.getenv("GITHUB_ACTOR") ?: "admin"
+                password System.getenv("GITHUB_TOKEN") ?: "admin"
+            }
+        }
+    }
 }
 
-task testIntegration(type: Test) {
-    testClassesDirs = sourceSets.testIntegration.output.classesDirs
-    classpath = sourceSets.testIntegration.runtimeClasspath
-
-    useJUnitPlatform()
+build {
+    project.version = getVersion()
 }
 
-test.doFirst {
-    systemProperty 'spring.profiles.active', 'dev, test'
+task getVersionName {
+    doLast {
+        println(getVersion())
+    }
 }
 
-rootProject.tasks.named("processTestIntegrationResources") {
-    duplicatesStrategy = 'include'
+task incrementVersionNameMajor {
+    doLast {
+        println("Version before: " + getVersion())
+        def propertiesFile = file('version.properties')
+        Properties properties = new Properties()
+        loadProperties(propertiesFile, properties)
+
+        def versionNameMajor = ((String) properties['VERSION_NAME_MAJOR']).toInteger() + 1
+        def versionNameMinor = 0
+        def versionNamePatch = 0
+
+        properties['VERSION_NAME_MAJOR'] = versionNameMajor.toString()
+        properties['VERSION_NAME_MINOR'] = versionNameMinor.toString()
+        properties['VERSION_NAME_PATCH'] = versionNamePatch.toString()
+        properties.store(propertiesFile.newWriter(), null)
+        println("Version after: " + getVersion())
+    }
+}
+
+task incrementVersionNameMinor {
+    doLast {
+        println("Version before: " + getVersion())
+        def propertiesFile = file('version.properties')
+        Properties properties = new Properties()
+        loadProperties(propertiesFile, properties)
+
+        def versionNameMinor = ((String) properties['VERSION_NAME_MINOR']).toInteger() + 1
+        def versionNamePatch = 0
+
+        properties['VERSION_NAME_MINOR'] = versionNameMinor.toString()
+        properties['VERSION_NAME_PATCH'] = versionNamePatch.toString()
+        properties.store(propertiesFile.newWriter(), null)
+        println("Version after: " + getVersion())
+    }
+}
+
+task incrementVersionNamePatch {
+    doLast {
+        println("Version before: " + getVersion())
+        def propertiesFile = file('version.properties')
+        Properties properties = new Properties()
+        loadProperties(propertiesFile, properties)
+
+        def versionNamePatch = ((String) properties['VERSION_NAME_PATCH']).toInteger() + 1
+
+        properties['VERSION_NAME_PATCH'] = versionNamePatch.toString()
+        properties.store(propertiesFile.newWriter(), null)
+        println("Version after: " + getVersion())
+    }
+}
+
+String getVersion() {
+    def propertiesFile = file('version.properties')
+    Properties properties = new Properties()
+    loadProperties(propertiesFile, properties)
+
+    return properties['VERSION_NAME_MAJOR'] + "." +
+            properties['VERSION_NAME_MINOR'] + "." +
+            properties['VERSION_NAME_PATCH']
+}
+
+static void loadProperties(File propFile, Properties versionProps) {
+    if (propFile.canRead()) {
+        versionProps.load(new FileInputStream(propFile))
+    } else {
+        throw new GradleException("Could not read version.properties!")
+    }
 }
