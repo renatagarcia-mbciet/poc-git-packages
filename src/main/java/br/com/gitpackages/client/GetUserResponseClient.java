@@ -2,14 +2,10 @@ package br.com.gitpackages.client;
 
 import br.com.gitpackages.mapper.UserMapper;
 import br.com.gitpackages.model.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
-@Builder
-@NoArgsConstructor
+@RequiredArgsConstructor
 @AllArgsConstructor
 public class GetUserResponseClient {
 
