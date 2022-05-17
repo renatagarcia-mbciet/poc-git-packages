@@ -28,6 +28,8 @@ ext {
     set('fixtureFactoryVersion', '3.1.0')
 
     set('restAssuredVersion', '4.2.0')
+    set('assertjVersion', '3.21.0')
+
     set('wiremockStandaloneVersion', '2.27.2')
 }
 
@@ -48,8 +50,21 @@ dependencies {
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 
     testAnnotationProcessor 'org.projectlombok:lombok'
-
     testCompileOnly 'org.projectlombok:lombok'
+    testImplementation 'org.mockito:mockito-inline:3.12.4'
+    testImplementation 'org.testcontainers:junit-jupiter:1.16.0'
+    testImplementation "org.testcontainers:postgresql:1.16.3"
+    testImplementation('org.springframework.boot:spring-boot-starter-test') { exclude group: 'org.junit.vintage', module: 'junit-vintage-engine' }
+    testImplementation 'org.awaitility:awaitility:4.1.1'
+    testImplementation 'org.jeasy:easy-random-core:5.0.0'
+
+    testImplementation "io.rest-assured:rest-assured:${restAssuredVersion}"
+    testImplementation "io.rest-assured:json-path:${restAssuredVersion}"
+    testImplementation "io.rest-assured:xml-path:${restAssuredVersion}"
+    testImplementation "org.assertj:assertj-core:${assertjVersion}"
+    testImplementation "com.github.tomakehurst:wiremock-standalone:${wiremockStandaloneVersion}"
+
+    testImplementation "br.com.six2six:fixture-factory:${fixtureFactoryVersion}"
 }
 
 dependencyManagement {
@@ -86,14 +101,6 @@ jacocoTestReport {
         csv.required = false
     }
 
-    afterEvaluate {
-        classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: [
-                    "br/com/cryptohub/partner/connector/exception",
-                    "**/config/*"
-            ])
-        }))
-    }
 }
 
 sourceSets {
