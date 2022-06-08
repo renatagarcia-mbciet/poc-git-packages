@@ -12,4 +12,5 @@ import lombok.RequiredArgsConstructor;
 public class User {
 
   private String name;
+  private String codigo;
 }

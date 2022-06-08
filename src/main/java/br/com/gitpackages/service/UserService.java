@@ -18,6 +18,7 @@ public class UserService {
 
     GetUserResponseClient response = new GetUserResponseClient();
     response.setName("Renata");
+    response.setIdent("2331sdasc1231");
     return response.toModel();
   }
 }

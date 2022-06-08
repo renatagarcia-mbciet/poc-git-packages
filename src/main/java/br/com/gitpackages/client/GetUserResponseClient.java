@@ -10,6 +10,7 @@ import lombok.*;
 public class GetUserResponseClient {
 
   private String name;
+  private String ident;
 
   public User toModel() {
     return UserMapper.INSTANCE.mapResponseClientToModel(this);
